@@ -6,7 +6,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyBT8TZ9o6fgda0_3xLNmjn9i2ziEZCO3dE",
   authDomain: "fadetactoe.firebaseapp.com",
-  databaseURL: "https://PASTE_YOUR_PROJECT-default-rtdb.firebaseio.com",
+  databaseURL: "https://fadetactoe-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "fadetactoe",
   storageBucket: "fadetactoe.firebasestorage.app",
   messagingSenderId: "300507040620",
