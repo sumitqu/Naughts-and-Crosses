@@ -1,46 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Naughts and Crosses</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>Fading Naughts &amp; Crosses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <nav>
-    <ul>
-      <li>Naughts and Crosses</li>
-    </ul>
-  </nav>
 
-  <div class="gameContainer">
-    <div class="container">
-      <div class="line"></div>
-      <div class="box bt-0 bl-0"><span class="boxtext"></span></div>
-      <div class="box bt-0"><span class="boxtext"></span></div>
-      <div class="box bt-0 br-0"><span class="boxtext"></span></div>
-      <div class="box bl-0"><span class="boxtext"></span></div>
-      <div class="box"><span class="boxtext"></span></div>
-      <div class="box br-0"><span class="boxtext"></span></div>
-      <div class="box bl-0 bb-0"><span class="boxtext"></span></div>
-      <div class="box bb-0"><span class="boxtext"></span></div>
-      <div class="box bb-0 br-0"><span class="boxtext"></span></div>
+  <div class="arcade">
+
+    <header class="hud">
+      <h1 class="title">FADE<span class="title-accent">TAC</span>TOE</h1>
+      <p class="subtitle">only your last 3 marks survive &mdash; no ties, ever</p>
+    </header>
+
+    <div class="status-row">
+      <div class="player-chip player-chip--x active" id="chipX">
+        <span class="mark">✕</span><span class="label">Player 1</span>
+      </div>
+      <div class="status-text" id="statusText">Player 1&rsquo;s turn</div>
+      <div class="player-chip player-chip--o" id="chipO">
+        <span class="mark">◯</span><span class="label">Player 2</span>
+      </div>
     </div>
-    <div class="gameInfo">
-      <h1>Welcome to Naughts and Crosses game</h1>
-      <div>
-        <span class="info">Turn for X</span>
-        <button id="reset">Reset</button>
-      </div>
-      <div class="imgbox">
-        <img src="excited.gif" alt="" />
-      </div>
+
+    <div class="board" id="board" role="grid" aria-label="Tic tac toe board">
+      <!-- 9 cells injected by script.js -->
+    </div>
+
+    <div class="controls">
+      <button class="btn btn--reset" id="resetBtn">Restart</button>
+      <button class="btn btn--sound" id="soundBtn" aria-pressed="false">🔈 Sound</button>
+    </div>
+
+    <p class="hint">The dimmed mark is next to fade when that player moves again.</p>
+  </div>
+
+  <div class="win-overlay" id="winOverlay">
+    <div class="win-card">
+      <img src="excited.gif" alt="" class="win-gif" />
+      <div class="win-text" id="winText">Player 1 wins!</div>
+      <button class="btn btn--reset" id="playAgainBtn">Play again</button>
     </div>
   </div>
+
+  <audio id="tingSound" src="ting.mp3" preload="auto"></audio>
+  <audio id="gameoverSound" src="gameover.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+
   <script src="script.js"></script>
 </body>
-
 </html>
