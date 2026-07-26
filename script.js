@@ -10,6 +10,7 @@ const WIN_LINES = [
 ];
 const MAX_MARKS_PER_PLAYER = 3;
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid confusion
+const STALE_ROOM_MS = 60 * 60 * 1000; // 1 hour of inactivity
 
 /* ---------- DOM ---------- */
 const screens = {
@@ -95,6 +96,35 @@ auth.signInAnonymously().catch(err => {
   showToast('Could not connect. Check your internet connection.');
 });
 
+auth.onAuthStateChanged(user => {
+  if (user) cleanupStaleRooms();
+});
+
+/* ---------- Stale room cleanup ---------- */
+// Best-effort sweep: runs whenever someone loads the page. Deletes any room
+// that hasn't seen activity (join / move / rematch) in over an hour.
+async function cleanupStaleRooms() {
+  try {
+    const cutoff = Date.now() - STALE_ROOM_MS;
+    const snap = await db.ref('rooms')
+      .orderByChild('lastActivityAt')
+      .endAt(cutoff)
+      .get();
+
+    if (!snap.exists()) return;
+
+    const deletions = [];
+    snap.forEach(child => {
+      deletions.push(db.ref('rooms/' + child.key).remove());
+    });
+    await Promise.all(deletions);
+  } catch (err) {
+    // Non-critical — if this fails (e.g. offline, missing index) the game
+    // still works fine, rooms just won't get swept this visit.
+    console.warn('Stale room cleanup skipped:', err.message);
+  }
+}
+
 /* ---------- Name screen ---------- */
 nameContinueBtn.addEventListener('click', () => {
   const val = nameInput.value.trim();
@@ -143,6 +173,7 @@ createRoomBtn.addEventListener('click', async () => {
       currentPlayer: 'X',
       winner: null,
       winLine: null,
+      lastActivityAt: Date.now(),
       createdAt: Date.now()
     };
 
@@ -202,6 +233,7 @@ joinRoomBtn.addEventListener('click', async () => {
       room.players = room.players || {};
       room.players.O = { name: playerName, joinedAt: Date.now() };
       room.status = 'active';
+      room.lastActivityAt = Date.now();
       return room;
     });
 
@@ -358,6 +390,7 @@ function attemptMove(index) {
     room.board[index] = mySymbol;
     queue.push(index);
     room.moveQueues[mySymbol] = queue;
+    room.lastActivityAt = Date.now();
 
     const winLine = getWinningLine(room.board, mySymbol);
     if (winLine) {
@@ -392,7 +425,8 @@ rematchBtn.addEventListener('click', () => {
     currentPlayer: 'X',
     status: 'active',
     winner: null,
-    winLine: null
+    winLine: null,
+    lastActivityAt: Date.now()
   }).catch(err => console.error(err));
 });
 
